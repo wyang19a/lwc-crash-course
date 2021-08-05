@@ -6,6 +6,8 @@ export default class ToDoManager extends LightningElement {
   @track time = '8:15 PM' // @track OPTIONAL as of Sp20
   @track greeting = "Good Evening" // @track OPTIONAL as of Sp20
 
+  @track todos = []
+
   //LifeCycle Method
   connectedCallback() {
     this.getTime();
@@ -44,5 +46,29 @@ export default class ToDoManager extends LightningElement {
     } else {
       this.greeting = "Good Evening"
     }
+  }
+
+  addTodoHandler(){
+    // document.querySelector does not work. this.template.querySelector must be used
+    // because of the local services. You don't have direct access to document object
+    const inputBox = this.template.querySelector('lightning-input')
+
+    const todo = {
+      todoId: this.todos.length,
+      todoName: inputBox.value,
+      done: false,
+      todoDate: new Date()
+    }
+    this.todos.push(todo)
+    inputBox.value = ''
+  }
+
+  // reactive property get, looks similar to function, must return a value 
+  // we need to iterate over todos list, filter for incomplete tasks.
+  get upcomingTasks() {
+    return this.todos && this.todos.length ? this.todos.filter(todo => !todo.done) : []
+  }
+  get completedTasks() {
+    return this.todos && this.todos.length ? this.todos.filter(todo => todo.done) : []
   }
 }
